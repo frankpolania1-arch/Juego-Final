@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Dsuelo
+  - Dtecho
+  - TXTjugador
+  - Drana
   layers:
   - Default
   - TransparentFX
