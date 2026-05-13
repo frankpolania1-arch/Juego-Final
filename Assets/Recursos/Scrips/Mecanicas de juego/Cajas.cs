@@ -30,8 +30,8 @@ public class Cajas : MonoBehaviour
             if (random == 2 || random == 4 || random == 6 || random == 8 || random == 10)
             {
                 anim.SetBool("cambio", true);
-                gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 1);
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                gameObject.transform.localScale = new Vector3(3f, 3f, 1);
+
                 Bx.isTrigger = true;
             }
             else gameObject.SetActive(false);

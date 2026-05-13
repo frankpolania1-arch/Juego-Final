@@ -1,85 +1,79 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
-public class Movimiento : MonoBehaviour
+public class MovimientoJugador : MonoBehaviour
 {
-    float movimiento;
+    [Header("Movimiento")]
     public float movimientoSpeed = 5f;
-    public float fuerzaSalto = 5f;
-    Rigidbody2D rb;
 
-    BoxCollider2D suelo;
-    public SpriteRenderer render;
-    public Animator animator;
+    [Header("Salto")]
+    public float fuerzaSalto = 8f;
 
+    [Header("Referencias")]
+    public Dsuelo Dsuelo;
 
+    private Rigidbody2D rb;
+    private Animator animator;
+
+    private float movimiento;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        suelo = GameObject.Find("Dsuelo").GetComponent<BoxCollider2D>();
-        animator = GetComponent<Animator>();    
+        animator = GetComponent<Animator>();
     }
-
 
     void Update()
     {
-        if (animator != null)
-        {
-            animator.SetBool("correr", true);
-        }
+        movimiento = 0f;
 
-        // SALTO
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && Dsuelo.tocandoSuelo)
+        // IZQUIERDA
+        if (Keyboard.current.aKey.isPressed ||
+            Keyboard.current.leftArrowKey.isPressed)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
-        }
-
-        // MOVER DERECHA
-        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
-        {
-            animator.SetBool("correr", true);
-            movimiento = 1f;
-            Vector3 escala = transform.localScale;
-            escala.x = Mathf.Abs(escala.x);
-            transform.localScale = escala;
-
-      
-        }
-
-        // MOVER IZQUIERDA
-        else if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
-        {
-            if (animator != null)
-            {
-                animator.SetBool("correr", movimiento != 0);
-            }
-            else
-            {
-                return;
-            }
-            animator.SetBool("correr", true);
             movimiento = -1f;
 
             Vector3 escala = transform.localScale;
             escala.x = -Mathf.Abs(escala.x);
             transform.localScale = escala;
-
-     
         }
-        else
+
+        // DERECHA
+        if (Keyboard.current.dKey.isPressed ||
+            Keyboard.current.rightArrowKey.isPressed)
         {
-            if (animator == null) return;
-            animator.SetBool("correr", false);
-            movimiento = 0f;
+            movimiento = 1f;
+
+            Vector3 escala = transform.localScale;
+            escala.x = Mathf.Abs(escala.x);
+            transform.localScale = escala;
         }
 
+        // ANIMACIÓN
+        if (animator != null)
+        {
+            animator.SetBool("correr", movimiento != 0);
+        }
+
+        // SALTO
+        if (Keyboard.current.spaceKey.wasPressedThisFrame &&
+            Dsuelo.tocandoSuelo)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+            rb.AddForce(
+                Vector2.up * fuerzaSalto,
+                ForceMode2D.Impulse
+            );
+        }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(movimiento * movimientoSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(
+            movimiento * movimientoSpeed,
+            rb.linearVelocity.y
+        );
     }
 }
+
+
