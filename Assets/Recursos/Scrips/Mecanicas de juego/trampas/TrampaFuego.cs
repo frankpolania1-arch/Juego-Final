@@ -1,10 +1,8 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrampaFuego : MonoBehaviour
 {
-
     [Header("Animator")]
     public Animator animator;
 
@@ -16,24 +14,21 @@ public class TrampaFuego : MonoBehaviour
     {
         StartCoroutine(CicloFuego());
     }
+
     IEnumerator CicloFuego()
     {
         while (true)
         {
-
             yield return new WaitForSeconds(tiempoEspera);
 
-            // Activa fuego
             animator.SetBool("fuego", true);
 
             yield return new WaitForSeconds(0.5f);
 
-            // Activa disparo
             animator.SetBool("disparo", true);
 
             yield return new WaitForSeconds(tiempoDisparo);
 
-            // Apaga animaciones
             animator.SetBool("disparo", false);
             animator.SetBool("fuego", false);
         }
@@ -45,21 +40,29 @@ public class TrampaFuego : MonoBehaviour
         {
             if (animator.GetBool("disparo"))
             {
-                Debug.Log("Quemado manito by stay");
+                Servicios servicios = other.GetComponent<Servicios>();
+
+                if (servicios != null)
+                {
+                    servicios.Muerte();
+                }
             }
         }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (animator.GetBool("disparo"))
         {
             if (collision.CompareTag("Player"))
             {
-                Debug.Log("Quemado manito");
-            }
-   
-        }
-        
-    }
+                Servicios servicios = collision.GetComponent<Servicios>();
 
+                if (servicios != null)
+                {
+                    servicios.Muerte();
+                }
+            }
+        }
+    }
 }

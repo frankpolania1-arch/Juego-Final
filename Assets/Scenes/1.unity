@@ -1470,6 +1470,7 @@ GameObject:
   - component: {fileID: 372220799}
   - component: {fileID: 372220801}
   - component: {fileID: 372220800}
+  - component: {fileID: 372220802}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1589,7 +1590,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Movimiento
   movimientoSpeed: 5
   fuerzaSalto: 7
-  Dsuelo: {fileID: 0}
+  Dsuelo: {fileID: 1490843450}
 --- !u!61 &372220800
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1663,6 +1664,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &372220802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372220795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 501b613c1ccebca44b1b7a334e5f7103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Servicios
+  animator: {fileID: 372220796}
 --- !u!1 &462889844
 GameObject:
   m_ObjectHideFlags: 0

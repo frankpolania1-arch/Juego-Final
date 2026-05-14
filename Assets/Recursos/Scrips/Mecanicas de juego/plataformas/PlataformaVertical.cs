@@ -24,8 +24,7 @@ public class PlataformaVertical : MonoBehaviour
 
     void Update()
     {
-        float movimientoY =
-            Mathf.PingPong(Time.time * velocidad, distancia * 2) - distancia;
+        float movimientoY = Mathf.PingPong(Time.time * velocidad, distancia * 2) - distancia;
 
         transform.position = new Vector3(
             posicionInicial.x,

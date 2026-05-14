@@ -12,11 +12,7 @@ public class Cajas : MonoBehaviour
         Bx = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         gameObject.SetActive(true);
-
-
-
     }
-
     private async void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Dtecho"))

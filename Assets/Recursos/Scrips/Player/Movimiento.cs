@@ -9,7 +9,7 @@ public class MovimientoJugador : MonoBehaviour
     [Header("Salto")]
     public float fuerzaSalto = 8f;
 
-    [Header("Referencias")]
+    [Header("Detectar Suelo")]
     public Dsuelo Dsuelo;
 
     private Rigidbody2D rb;
@@ -17,10 +17,14 @@ public class MovimientoJugador : MonoBehaviour
 
     private float movimiento;
 
+    Servicios servicios;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        servicios = GetComponent<Servicios>();
+        servicios.PuntoInicio();
     }
 
     void Update()
@@ -49,13 +53,12 @@ public class MovimientoJugador : MonoBehaviour
             transform.localScale = escala;
         }
 
-        // ANIMACIÓN
         if (animator != null)
         {
             animator.SetBool("correr", movimiento != 0);
         }
 
-        // SALTO
+
         if (Keyboard.current.spaceKey.wasPressedThisFrame &&
             Dsuelo.tocandoSuelo)
         {
