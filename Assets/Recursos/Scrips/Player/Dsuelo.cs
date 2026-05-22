@@ -1,19 +1,22 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Dsuelo : MonoBehaviour
 {
     public static bool tocandoSuelo;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        tocandoSuelo = true;
+        if (other.CompareTag("Suelo"))
+        {
+            tocandoSuelo = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-       tocandoSuelo = false;
-        
+        if (other.CompareTag("Suelo"))
+        {
+            tocandoSuelo = false;
+        }
     }
-
 }

@@ -40,7 +40,7 @@ public class TrampaFuego : MonoBehaviour
         {
             if (animator.GetBool("disparo"))
             {
-                Servicios servicios = other.GetComponent<Servicios>();
+                ServiciosJugador servicios = other.GetComponent<ServiciosJugador>();
 
                 if (servicios != null)
                 {
@@ -56,7 +56,7 @@ public class TrampaFuego : MonoBehaviour
         {
             if (collision.CompareTag("Player"))
             {
-                Servicios servicios = collision.GetComponent<Servicios>();
+                ServiciosJugador servicios = collision.GetComponent<ServiciosJugador>();
 
                 if (servicios != null)
                 {

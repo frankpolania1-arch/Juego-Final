@@ -8,6 +8,7 @@ TagManager:
   - Dtecho
   - TXTjugador
   - Drana
+  - Suelo
   layers:
   - Default
   - TransparentFX

@@ -17,13 +17,13 @@ public class MovimientoJugador : MonoBehaviour
 
     private float movimiento;
 
-    Servicios servicios;
+    ServiciosJugador servicios;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        servicios = GetComponent<Servicios>();
+        servicios = GetComponent<ServiciosJugador>();
         servicios.PuntoInicio();
     }
 
@@ -37,19 +37,16 @@ public class MovimientoJugador : MonoBehaviour
         {
             movimiento = -1f;
 
-            Vector3 escala = transform.localScale;
-            escala.x = -Mathf.Abs(escala.x);
+            Vector3 escala = transform.localScale;escala.x = -Mathf.Abs(escala.x);
             transform.localScale = escala;
         }
 
         // DERECHA
-        if (Keyboard.current.dKey.isPressed ||
-            Keyboard.current.rightArrowKey.isPressed)
+        if (Keyboard.current.dKey.isPressed ||Keyboard.current.rightArrowKey.isPressed)
         {
             movimiento = 1f;
 
-            Vector3 escala = transform.localScale;
-            escala.x = Mathf.Abs(escala.x);
+            Vector3 escala = transform.localScale;escala.x = Mathf.Abs(escala.x);
             transform.localScale = escala;
         }
 
@@ -59,23 +56,16 @@ public class MovimientoJugador : MonoBehaviour
         }
 
 
-        if (Keyboard.current.spaceKey.wasPressedThisFrame &&
-            Dsuelo.tocandoSuelo)
+        if (Keyboard.current.spaceKey.wasPressedThisFrame && Dsuelo.tocandoSuelo)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(
-                Vector2.up * fuerzaSalto,
-                ForceMode2D.Impulse
-            );
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);  
         }
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(
-            movimiento * movimientoSpeed,
-            rb.linearVelocity.y
-        );
+        rb.linearVelocity = new Vector2(movimiento * movimientoSpeed, rb.linearVelocity.y);
+
     }
 }
 
