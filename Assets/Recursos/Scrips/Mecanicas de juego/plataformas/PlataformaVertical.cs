@@ -3,19 +3,21 @@ using UnityEngine;
 
 public class PlataformaVertical : MonoBehaviour
 {
-
     [Header("Movimiento")]
     public float velocidad = 2f;
     public float distancia = 3f;
 
     [Header("Efecto Peso")]
-    public float bajada = 2f;
-    public float velocidadRebote = 2f;
+    public float bajada = 0.4f;
+    public float velocidadPeso = 8f;
+    public float velocidadRecuperacion = 4f;
 
     private Vector3 posicionInicial;
 
-    private float offsetY = 0f;
-    private bool rebotando = false;
+    private float offsetActual = 0f;
+    private float offsetObjetivo = 0f;
+
+    private bool jugadorEncima = false;
 
     void Start()
     {
@@ -24,60 +26,63 @@ public class PlataformaVertical : MonoBehaviour
 
     void Update()
     {
-        float movimientoY = Mathf.PingPong(Time.time * velocidad, distancia * 2) - distancia;
+        float movimientoY =
+            Mathf.PingPong(Time.time * velocidad, distancia * 2)
+            - distancia;
+        float velocidadSuavizado =
+            jugadorEncima ?
+            velocidadPeso :
+            velocidadRecuperacion;
 
+        offsetActual = Mathf.Lerp(
+            offsetActual,
+            offsetObjetivo,
+            Time.deltaTime * velocidadSuavizado
+        );
         transform.position = new Vector3(
             posicionInicial.x,
-            posicionInicial.y + movimientoY + offsetY,
+            posicionInicial.y + movimientoY + offsetActual,
             posicionInicial.z
         );
     }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            collision.transform.SetParent(transform);
-
             foreach (ContactPoint2D punto in collision.contacts)
             {
                 if (punto.normal.y < -0.5f)
                 {
-                    if (!rebotando)
-                    {
-                        StartCoroutine(EfectoPeso());
-                    }
+                    jugadorEncima = true;
+
+                    offsetObjetivo = -bajada;
+
+                    collision.transform.SetParent(transform);
+
+                    break;
                 }
             }
         }
     }
 
-    IEnumerator EfectoPeso()
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        rebotando = true;
-
-        float t = 0;
-        while (t < 1)
+        if (collision.gameObject.CompareTag("Player"))
         {
-            t += Time.deltaTime * velocidadRebote;
+            jugadorEncima = true;
 
-            offsetY = Mathf.Lerp(0, -bajada, t);
-
-            yield return null;
+            offsetObjetivo = -bajada;
         }
-
-        t = 0;
-
-        while (t < 1)
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
         {
-            t += Time.deltaTime * velocidadRebote;
+            jugadorEncima = false;
 
-            offsetY = Mathf.Lerp(-bajada, 0, t);
+            offsetObjetivo = 0f;
 
-            yield return null;
+            collision.transform.SetParent(null);
         }
-
-        offsetY = 0;
-        rebotando = false;
     }
 }

@@ -8,21 +8,22 @@ public class ServiciosJugador : MonoBehaviour
     float inicioY;
     byte vidas;
 
+    private bool recibiendoDaño = false;
+
     [Header("Animator")]
     public Animator animator;
 
+    [Header("Texto")]
     public TextMeshProUGUI variables;
 
-    private void Start()
-    {
-        variables.text = "Vidas " + vidas;
-    }
     void Awake()
     {
         vidas = 3;
-        variables = FindAnyObjectByType<TextMeshProUGUI>();
-        animator = GetComponent<Animator>();
-       
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        variables.text = "Vidas: " + vidas;
     }
 
     public void PuntoInicio()
@@ -33,18 +34,33 @@ public class ServiciosJugador : MonoBehaviour
 
     public async void Muerte()
     {
+        if (recibiendoDaño) return;
+
+        recibiendoDaño = true;
+
         if (vidas > 0)
         {
-            animator.SetBool("Muerte", true);
-            await Task.Delay(500);
-            animator.SetBool("Muerte", false);
-            transform.position = new Vector2(inicioX, inicioY);
             vidas--;
-            variables.text = "Vidas " + vidas;
+
+            variables.text = "Vidas: " + vidas;
+
+            animator.SetBool("Muerte", true);
+
+            await Task.Delay(1000);
+
+            animator.SetBool("Muerte", false);
+
+            transform.position =
+                new Vector2(inicioX, inicioY);
         }
         else
         {
-            Debug.Log("Muerte Fin");
+            Debug.Log("GAME OVER");
         }
+
+        // Invulnerabilidad temporal
+        await Task.Delay(1500);
+
+        recibiendoDaño = false;
     }
 }

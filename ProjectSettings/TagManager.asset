@@ -9,6 +9,7 @@ TagManager:
   - TXTjugador
   - Drana
   - Suelo
+  - variables
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - suelo
   - 
   - 
   - 
@@ -48,3 +49,4 @@ TagManager:
     locked: 0
   m_RenderingLayers:
   - Default
+  - suelo

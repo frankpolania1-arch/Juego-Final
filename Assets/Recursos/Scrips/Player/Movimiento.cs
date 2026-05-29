@@ -19,17 +19,43 @@ public class MovimientoJugador : MonoBehaviour
 
     ServiciosJugador servicios;
 
+    public bool panel = false;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         servicios = GetComponent<ServiciosJugador>();
+
         servicios.PuntoInicio();
     }
 
     void Update()
     {
-        movimiento = 0f;
+        if (panel)
+        {
+            return;
+        }
+
+        if (Dsuelo.tocandoSuelo)
+        {
+            // Eliminar micro rebotes
+            if (Mathf.Abs(rb.linearVelocity.y) < 0.1f)
+            {
+                rb.linearVelocity = new Vector2(
+                    rb.linearVelocity.x,
+                    0
+                );
+            }
+
+            // SALTO
+            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                rb.linearVelocity = new Vector2(
+                    rb.linearVelocity.x,
+                    fuerzaSalto
+                );
+            }
+        }
 
         // IZQUIERDA
         if (Keyboard.current.aKey.isPressed ||
@@ -37,36 +63,55 @@ public class MovimientoJugador : MonoBehaviour
         {
             movimiento = -1f;
 
-            Vector3 escala = transform.localScale;escala.x = -Mathf.Abs(escala.x);
+            Vector3 escala = transform.localScale;
+            escala.x = -Mathf.Abs(escala.x);
             transform.localScale = escala;
         }
 
         // DERECHA
-        if (Keyboard.current.dKey.isPressed ||Keyboard.current.rightArrowKey.isPressed)
+        else if (Keyboard.current.dKey.isPressed ||
+                 Keyboard.current.rightArrowKey.isPressed)
         {
             movimiento = 1f;
 
-            Vector3 escala = transform.localScale;escala.x = Mathf.Abs(escala.x);
+            Vector3 escala = transform.localScale;
+            escala.x = Mathf.Abs(escala.x);
             transform.localScale = escala;
         }
+           else
+            {
+                movimiento = 0f;
+
+                // detener horizontal
+                rb.linearVelocity = new Vector2(
+                    0,
+                    rb.linearVelocity.y
+                );
+
+                // eliminar micro rebotes
+                if (Dsuelo.tocandoSuelo &&
+                    Mathf.Abs(rb.linearVelocity.y) < 0.1f)
+                {
+                    rb.linearVelocity = new Vector2(
+                        0,
+                        0
+                    );
+                }
+            }
+        
 
         if (animator != null)
         {
             animator.SetBool("correr", movimiento != 0);
         }
 
-
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && Dsuelo.tocandoSuelo)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);  
-        }
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(movimiento * movimientoSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(movimiento * movimientoSpeed,rb.linearVelocity.y);
 
+
+  
     }
 }
-
-

@@ -33,35 +33,19 @@ public class TrampaFuego : MonoBehaviour
             animator.SetBool("fuego", false);
         }
     }
-
     private void OnTriggerStay2D(Collider2D other)
     {
+        if (!animator.GetBool("disparo"))
+            return;
+
         if (other.CompareTag("Player"))
         {
-            if (animator.GetBool("disparo"))
+            ServiciosJugador servicios =
+                other.GetComponent<ServiciosJugador>();
+
+            if (servicios != null)
             {
-                ServiciosJugador servicios = other.GetComponent<ServiciosJugador>();
-
-                if (servicios != null)
-                {
-                    servicios.Muerte();
-                }
-            }
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (animator.GetBool("disparo"))
-        {
-            if (collision.CompareTag("Player"))
-            {
-                ServiciosJugador servicios = collision.GetComponent<ServiciosJugador>();
-
-                if (servicios != null)
-                {
-                    servicios.Muerte();
-                }
+                servicios.Muerte();
             }
         }
     }
