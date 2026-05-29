@@ -63,7 +63,7 @@ public class ServiciosJugador : MonoBehaviour
 
             animator.SetBool("Muerte", true);
 
-            await Task.Delay(1000);
+            await Task.Delay(500);
 
             animator.SetBool("Muerte", false);
 
