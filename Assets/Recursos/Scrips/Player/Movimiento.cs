@@ -25,7 +25,6 @@ public class MovimientoJugador : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         servicios = GetComponent<ServiciosJugador>();
-
         servicios.PuntoInicio();
     }
 

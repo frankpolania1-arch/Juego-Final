@@ -18,8 +18,34 @@ public class Cajas : MonoBehaviour
     [Header("Animator Puerta")]
     public Animator animP;
 
-    // NUEVO
+    [Header("UI Compartida")]
+    public Button btnA;
+    public Button btnB;
+    public Button btnC;
+
+    public TextMeshProUGUI txtA;
+    public TextMeshProUGUI txtB;
+    public TextMeshProUGUI txtC;
+
+
+
+    public Dictionary<int, Pregunta> preguntas = new Dictionary<int, Pregunta>();
+
+    BoxCollider2D Bx;
+    public Animator anim;
+    Rigidbody2D rb;
+
+    public byte Mensaje;
+
     private Puerta scriptPuerta;
+    private string respuestaCorrecta;
+    public TextMeshProUGUI mensajeTXT;
+    public TextMeshProUGUI variables;
+
+    private bool ocupado = false;
+
+    private static Canvas cachedFondo;
+    private static GameObject cachedJugador;
 
     [System.Serializable]
     public class Pregunta
@@ -33,34 +59,6 @@ public class Cajas : MonoBehaviour
         public string incorrecta1;
         public string incorrecta2;
     }
-
-    public Dictionary<int, Pregunta> preguntas =
-        new Dictionary<int, Pregunta>();
-
-    BoxCollider2D Bx;
-    Animator anim;
-    Rigidbody2D rb;
-
-    public byte Mensaje;
-
-    [Header("UI Compartida")]
-    public Button btnA;
-    public Button btnB;
-    public Button btnC;
-
-    public TextMeshProUGUI txtA;
-    public TextMeshProUGUI txtB;
-    public TextMeshProUGUI txtC;
-
-    private string respuestaCorrecta;
-
-    public TextMeshProUGUI mensajeTXT;
-
-    private bool ocupado = false;
-
-    private static Canvas cachedFondo;
-    private static GameObject cachedJugador;
-
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -133,6 +131,8 @@ public class Cajas : MonoBehaviour
         {
             mensajeTXT.gameObject.SetActive(false);
         }
+        jugador.GetComponent<ServiciosJugador>().variables.gameObject.SetActive(true);
+        Time.timeScale = 1f;
     }
 
     public async Task CambioInicio()
@@ -173,10 +173,16 @@ public class Cajas : MonoBehaviour
                     {
                         animP.SetBool("abrir", true);
                     }
-
+                    Cajas[] todasLasCajas = FindObjectsByType<Cajas>(FindObjectsSortMode.None);
+                    foreach (Cajas caja in todasLasCajas)
+                    {
+                        caja.anim.SetBool("cambio", true);
+                        caja.gameObject.SetActive(false);
+                    }
                     Debug.Log("PUERTA ABIERTA");
                 }
             }
+
         }
         else
         {
@@ -197,6 +203,9 @@ public class Cajas : MonoBehaviour
         {
             fondo.gameObject.SetActive(false);
         }
+
+       variables.gameObject.SetActive(true);
+        Time.timeScale = 1f;
     }
 
 
@@ -254,8 +263,15 @@ public class Cajas : MonoBehaviour
 
         if (collision.CompareTag("Dtecho"))
         {
-            MostrarPregunta();
 
+            Time.timeScale = 0f;
+
+
+            variables.gameObject.SetActive(false);
+
+
+
+            MostrarPregunta();
             if (fondo != null)
             {
                 fondo.gameObject.SetActive(true);
