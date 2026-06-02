@@ -27,8 +27,6 @@ public class Cajas : MonoBehaviour
     public TextMeshProUGUI txtB;
     public TextMeshProUGUI txtC;
 
-
-
     public Dictionary<int, Pregunta> preguntas = new Dictionary<int, Pregunta>();
 
     BoxCollider2D Bx;
@@ -59,6 +57,7 @@ public class Cajas : MonoBehaviour
         public string incorrecta1;
         public string incorrecta2;
     }
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -68,55 +67,38 @@ public class Cajas : MonoBehaviour
         if (cachedFondo == null)
         {
             GameObject fObj = GameObject.Find("CanvasFondo");
-
             if (fObj != null)
-            {
                 cachedFondo = fObj.GetComponent<Canvas>();
-            }
         }
-
         fondo = cachedFondo;
 
         if (cachedJugador == null)
-        {
             cachedJugador = GameObject.Find("Jugador");
-        }
-
         jugador = cachedJugador;
 
         if (fondo != null)
-        {
             fondo.gameObject.SetActive(false);
-        }
+
         if (puerta != null)
         {
             animP = puerta.GetComponent<Animator>();
-
             scriptPuerta = puerta.GetComponent<Puerta>();
-
             if (scriptPuerta == null)
-            {
-                Debug.LogError(
-                    "El objeto puerta NO tiene el script Puerta"
-                );
-            }
+                Debug.LogError("El objeto puerta NO tiene el script Puerta");
         }
         else
         {
-            Debug.LogError(
-                "No asignaste la puerta en el inspector"
-            );
+            Debug.LogError("No asignaste la puerta en el inspector");
         }
 
         AgregarPreguntas();
+
         if (btnA != null) btnA.gameObject.SetActive(false);
         if (btnB != null) btnB.gameObject.SetActive(false);
         if (btnC != null) btnC.gameObject.SetActive(false);
 
         if (mensajeTXT != null)
-        {
             mensajeTXT.gameObject.SetActive(false);
-        }
     }
 
     public void RespuestaCorrecta()
@@ -128,9 +110,8 @@ public class Cajas : MonoBehaviour
         if (btnC != null) btnC.gameObject.SetActive(false);
 
         if (mensajeTXT != null)
-        {
             mensajeTXT.gameObject.SetActive(false);
-        }
+
         jugador.GetComponent<ServiciosJugador>().variables.gameObject.SetActive(true);
         Time.timeScale = 1f;
     }
@@ -138,41 +119,36 @@ public class Cajas : MonoBehaviour
     public async Task CambioInicio()
     {
         anim.SetBool("cambio", false);
-
         await Task.Delay(10000);
-
         anim.SetBool("Regreso", true);
-
         gameObject.SetActive(true);
     }
+
     public void ValidarRespuesta(string respuesta)
     {
         if (respuesta == respuestaCorrecta)
         {
             mensajeTXT.text = "¡Correcto!";
 
+            // SONIDO DE MONEDA al acertar
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.moneda);
+
             if (fondo != null)
-            {
                 fondo.gameObject.SetActive(false);
-            }
 
             anim.SetBool("cambio", true);
 
             if (scriptPuerta != null)
             {
                 scriptPuerta.puntos++;
-
-                Debug.Log(
-                    "Puntos puerta: " +
-                    scriptPuerta.puntos
-                );
+                Debug.Log("Puntos puerta: " + scriptPuerta.puntos);
 
                 if (scriptPuerta.puntos >= 5)
                 {
                     if (animP != null)
-                    {
                         animP.SetBool("abrir", true);
-                    }
+
                     Cajas[] todasLasCajas = FindObjectsByType<Cajas>(FindObjectsSortMode.None);
                     foreach (Cajas caja in todasLasCajas)
                     {
@@ -182,37 +158,29 @@ public class Cajas : MonoBehaviour
                     Debug.Log("PUERTA ABIERTA");
                 }
             }
-
         }
         else
         {
             mensajeTXT.text = "Incorrecto";
-
             gameObject.SetActive(false);
-
             _ = CambioInicio();
         }
 
         mensajeTXT.gameObject.SetActive(false);
-
         btnA.gameObject.SetActive(false);
         btnB.gameObject.SetActive(false);
         btnC.gameObject.SetActive(false);
 
         if (fondo != null)
-        {
             fondo.gameObject.SetActive(false);
-        }
 
-       variables.gameObject.SetActive(true);
+        variables.gameObject.SetActive(true);
         Time.timeScale = 1f;
     }
-
 
     public void MostrarPregunta()
     {
         Pregunta p = preguntas[Mensaje];
-
         mensajeTXT.text = p.pregunta;
 
         List<string> opciones = new List<string>()
@@ -222,13 +190,10 @@ public class Cajas : MonoBehaviour
             p.incorrecta2
         };
 
-
         for (int i = 0; i < opciones.Count; i++)
         {
             string temp = opciones[i];
-
             int random = Random.Range(i, opciones.Count);
-
             opciones[i] = opciones[random];
             opciones[random] = temp;
         }
@@ -243,52 +208,37 @@ public class Cajas : MonoBehaviour
         btnB.onClick.RemoveAllListeners();
         btnC.onClick.RemoveAllListeners();
 
-
-        btnA.onClick.AddListener(() =>
-            ValidarRespuesta(txtA.text));
-
-        btnB.onClick.AddListener(() =>
-            ValidarRespuesta(txtB.text));
-
-        btnC.onClick.AddListener(() =>
-            ValidarRespuesta(txtC.text));
+        btnA.onClick.AddListener(() => ValidarRespuesta(txtA.text));
+        btnB.onClick.AddListener(() => ValidarRespuesta(txtB.text));
+        btnC.onClick.AddListener(() => ValidarRespuesta(txtC.text));
     }
+
     private async void OnTriggerEnter2D(Collider2D collision)
     {
         if (ocupado) return;
-
         if (anim.GetBool("cambio")) return;
 
         Mensaje = (byte)Random.Range(0, 20);
 
         if (collision.CompareTag("Dtecho"))
         {
-
             Time.timeScale = 0f;
-
-
             variables.gameObject.SetActive(false);
 
-
-
             MostrarPregunta();
+
             if (fondo != null)
-            {
                 fondo.gameObject.SetActive(true);
-            }
 
             mensajeTXT.gameObject.SetActive(true);
-
             btnA.gameObject.SetActive(true);
             btnB.gameObject.SetActive(true);
             btnC.gameObject.SetActive(true);
 
             ocupado = true;
-
             anim.SetBool("golpe", true);
 
             await Task.Delay(2000);
-
             ocupado = false;
         }
     }
@@ -312,7 +262,7 @@ public class Cajas : MonoBehaviour
         preguntas.Add(14, new Pregunta() { titulo = "Dormir", pregunta = "¿Qué puedes atrapar pero no lanzar?", correcta = "Un resfriado", incorrecta1 = "Una pelota", incorrecta2 = "Una piedra" });
         preguntas.Add(15, new Pregunta() { titulo = "Espejo", pregunta = "¿Qué siempre está frente a ti pero no puedes ver?", correcta = "El futuro", incorrecta1 = "Tu nariz", incorrecta2 = "La espalda" });
         preguntas.Add(16, new Pregunta() { titulo = "Pesado", pregunta = "¿Qué pesa más: un kilo de hierro o un kilo de algodón?", correcta = "Pesan igual", incorrecta1 = "El hierro", incorrecta2 = "El algodón" });
-        preguntas.Add(17, new Pregunta() { titulo = "Letra", pregunta = "Qué palabra está mal escrita en el diccionario?", correcta = "Mal escrita", incorrecta1 = "Diccionario", incorrecta2 = "Palabra" });
+        preguntas.Add(17, new Pregunta() { titulo = "Letra", pregunta = "¿Qué palabra está mal escrita en el diccionario?", correcta = "Mal escrita", incorrecta1 = "Diccionario", incorrecta2 = "Palabra" });
         preguntas.Add(18, new Pregunta() { titulo = "Familia", pregunta = "Dos padres y dos hijos van en un carro, pero solo hay tres personas. ¿Cómo es posible?", correcta = "Abuelo, padre e hijo", incorrecta1 = "Uno iba escondido", incorrecta2 = "Uno no era familia" });
         preguntas.Add(19, new Pregunta() { titulo = "Respirar", pregunta = "¿Qué puedes romper sin tocarlo?", correcta = "Una promesa", incorrecta1 = "Un vidrio", incorrecta2 = "Una cuerda" });
     }

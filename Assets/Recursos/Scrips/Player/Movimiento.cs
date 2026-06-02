@@ -12,14 +12,16 @@ public class MovimientoJugador : MonoBehaviour
     [Header("Detectar Suelo")]
     public Dsuelo Dsuelo;
 
+    // Sonidos
+    private float pasoCooldown = 0f;
+    public float pasoIntervalo = 0.4f;  // Tiempo entre pasos
+
     private Rigidbody2D rb;
     private Animator animator;
-
     private float movimiento;
-
-    ServiciosJugador servicios;
-
+    private ServiciosJugador servicios;
     public bool panel = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -30,87 +32,65 @@ public class MovimientoJugador : MonoBehaviour
 
     void Update()
     {
-        if (panel)
+        if (panel) return;
+
+        bool enSuelo = Dsuelo.tocandoSuelo;
+
+        // Salto (y sonido de salto)
+        if (enSuelo && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            return;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
+            // Reproducir sonido de salto
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.saltar);
         }
 
-        if (Dsuelo.tocandoSuelo)
-        {
-            // Eliminar micro rebotes
-            if (Mathf.Abs(rb.linearVelocity.y) < 0.1f)
-            {
-                rb.linearVelocity = new Vector2(
-                    rb.linearVelocity.x,
-                    0
-                );
-            }
-
-            // SALTO
-            if (Keyboard.current.spaceKey.wasPressedThisFrame)
-            {
-                rb.linearVelocity = new Vector2(
-                    rb.linearVelocity.x,
-                    fuerzaSalto
-                );
-            }
-        }
-
-        // IZQUIERDA
-        if (Keyboard.current.aKey.isPressed ||
-            Keyboard.current.leftArrowKey.isPressed)
+        // Movimiento horizontal
+        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
         {
             movimiento = -1f;
-
-            Vector3 escala = transform.localScale;
-            escala.x = -Mathf.Abs(escala.x);
-            transform.localScale = escala;
+            Girar(-1);
         }
-
-        // DERECHA
-        else if (Keyboard.current.dKey.isPressed ||
-                 Keyboard.current.rightArrowKey.isPressed)
+        else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
         {
             movimiento = 1f;
-
-            Vector3 escala = transform.localScale;
-            escala.x = Mathf.Abs(escala.x);
-            transform.localScale = escala;
+            Girar(1);
         }
-           else
-            {
-                movimiento = 0f;
-
-                // detener horizontal
-                rb.linearVelocity = new Vector2(
-                    0,
-                    rb.linearVelocity.y
-                );
-
-                // eliminar micro rebotes
-                if (Dsuelo.tocandoSuelo &&
-                    Mathf.Abs(rb.linearVelocity.y) < 0.1f)
-                {
-                    rb.linearVelocity = new Vector2(
-                        0,
-                        0
-                    );
-                }
-            }
-        
-
-        if (animator != null)
+        else
         {
-            animator.SetBool("correr", movimiento != 0);
+            movimiento = 0f;
         }
 
+        // Sonido de caminar (con cooldown)
+        if (enSuelo && Mathf.Abs(movimiento) > 0.1f)
+        {
+            pasoCooldown -= Time.deltaTime;
+            if (pasoCooldown <= 0f)
+            {
+                pasoCooldown = pasoIntervalo;
+                if (AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(AudioManager.instance.caminar);
+            }
+        }
+        else
+        {
+            pasoCooldown = 0f;  // Reinicia el cooldown al parar
+        }
+
+        // Actualizar animator
+        if (animator != null)
+            animator.SetBool("correr", movimiento != 0);
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(movimiento * movimientoSpeed,rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(movimiento * movimientoSpeed, rb.linearVelocity.y);
+    }
 
-
-  
+    private void Girar(int direccion)
+    {
+        Vector3 escala = transform.localScale;
+        escala.x = direccion * Mathf.Abs(escala.x);
+        transform.localScale = escala;
     }
 }

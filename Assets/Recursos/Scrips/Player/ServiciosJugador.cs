@@ -9,9 +9,9 @@ public class ServiciosJugador : MonoBehaviour
     float inicioY;
     byte vidas;
 
-    private bool recibiendoDaño = false; 
+    private bool recibiendoDaño = false;
 
-    [Header ("MensajeMuerte")]
+    [Header("MensajeMuerte")]
     public TextMeshProUGUI mensajeMuerte;
 
     [Header("Animator")]
@@ -38,7 +38,6 @@ public class ServiciosJugador : MonoBehaviour
 
         variables.text = "Vidas: " + vidas;
 
-        
         btnContinuar.SetActive(false);
         btnSalir.SetActive(false);
     }
@@ -61,6 +60,10 @@ public class ServiciosJugador : MonoBehaviour
 
             variables.text = "Vidas: " + vidas;
 
+            // Sonido de recibir daño
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.recibirDanio);
+
             animator.SetBool("Muerte", true);
 
             await Task.Delay(500);
@@ -69,18 +72,26 @@ public class ServiciosJugador : MonoBehaviour
 
             transform.position =
                 new Vector2(inicioX, inicioY);
+
             if (vidas == 0)
             {
                 GameOver();
             }
         }
-        await Task.Delay(1500);
 
+        await Task.Delay(1500);
         recibiendoDaño = false;
     }
 
     void GameOver()
     {
+        //  SONIDO DE GAME OVER
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.gameOver); // reproduce el sonido
+            AudioManager.instance.StopMusica();                            // para la música de fondo
+        }
+
         Debug.Log("GAME OVER");
         variables.gameObject.SetActive(false);
         mensajeMuerte.text = "GAME OVER";
@@ -105,12 +116,14 @@ public class ServiciosJugador : MonoBehaviour
         mensajeMuerte.gameObject.SetActive(false);
         fondo.gameObject.SetActive(false);
         Time.timeScale = 1f;
-    }
 
+        // Opcional: reanudar la música del nivel al continuar
+        if (AudioManager.instance != null)
+            AudioManager.instance.CambiarMusica(AudioManager.instance.musicaNivel);
+    }
 
     public void BTNsalir()
     {
-
         Time.timeScale = 1f;
 #if UNITY_EDITOR
         bool salir = UnityEditor.EditorUtility.DisplayDialog(
