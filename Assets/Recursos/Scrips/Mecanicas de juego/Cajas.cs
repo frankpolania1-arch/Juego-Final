@@ -13,7 +13,7 @@ public class Cajas : MonoBehaviour
     public GameObject jugador;
 
     [Header("Jugador")]
-    public  ServiciosJugador sjugador;
+    public ServiciosJugador sjugador;
 
     [Header("Puerta")]
     public GameObject puerta;
@@ -52,10 +52,8 @@ public class Cajas : MonoBehaviour
     public class Pregunta
     {
         public string titulo;
-
         [TextArea]
         public string pregunta;
-
         public string correcta;
         public string incorrecta1;
         public string incorrecta2;
@@ -133,9 +131,9 @@ public class Cajas : MonoBehaviour
         {
             mensajeTXT.text = "¡Correcto!";
 
-            // SONIDO DE MONEDA al acertar
+            //  Sonido de respuesta correcta (moneda)
             if (AudioManager.instance != null)
-                AudioManager.instance.PlaySFX(AudioManager.instance.moneda);
+                AudioManager.instance.PlaySFX(AudioManager.instance.respuestaCorrecta);
 
             if (fondo != null)
                 fondo.gameObject.SetActive(false);
@@ -165,9 +163,15 @@ public class Cajas : MonoBehaviour
         else
         {
             mensajeTXT.text = "Incorrecto";
+
+            //  Sonido de respuesta incorrecta
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.respuestaIncorrecta);
+
             gameObject.SetActive(false);
             _ = CambioInicio();
         }
+
         sjugador.variables.gameObject.SetActive(true);
         sjugador.TXTpuntos.gameObject.SetActive(true);
         sjugador.corazones.gameObject.SetActive(true);
@@ -223,10 +227,15 @@ public class Cajas : MonoBehaviour
     {
         if (ocupado) return;
         if (anim.GetBool("cambio")) return;
+
         Mensaje = (byte)Random.Range(0, 70); // 0 a 69
 
         if (collision.CompareTag("Dtecho"))
         {
+            //  Sonido al tocar la caja (activar pregunta)
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.tocarCaja);
+
             Time.timeScale = 0f;
             variables.gameObject.SetActive(false);
 
