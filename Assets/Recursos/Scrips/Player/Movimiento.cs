@@ -10,7 +10,7 @@ public class MovimientoJugador : MonoBehaviour
     public float fuerzaSalto = 8f;
 
     [Header("Detectar Suelo")]
-    public Dsuelo Dsuelo;
+    public DSuelo Dsuelo;
 
     // Sonidos
     private float pasoCooldown = 0f;
@@ -20,8 +20,7 @@ public class MovimientoJugador : MonoBehaviour
     private Animator animator;
     private float movimiento;
     private ServiciosJugador servicios;
-    public bool panel = false;
-
+    
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -32,10 +31,11 @@ public class MovimientoJugador : MonoBehaviour
 
     void Update()
     {
-        if (panel) return;
-
         bool enSuelo = Dsuelo.tocandoSuelo;
 
+        if (enSuelo) Debug.Log("En suelo");
+
+        // Salto corregido
         if (enSuelo && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
@@ -43,23 +43,23 @@ public class MovimientoJugador : MonoBehaviour
                 AudioManager.instance.PlaySFX(AudioManager.instance.saltar);
         }
 
-
-        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+        // CONTROL DE MOVIMIENTO (CORREGIDO: Ahora sí se detiene)
+        if (Keyboard.current.aKey.isPressed)
         {
             movimiento = -1f;
             Girar(-1);
         }
-        else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+        else if (Keyboard.current.dKey.isPressed)
         {
             movimiento = 1f;
             Girar(1);
         }
         else
         {
-            movimiento = 0f;
+            movimiento = 0f; // ¡ESTA LÍNEA CORRIGE EL BLOQUEO!
         }
 
-
+        // Lógica del sonido de pasos
         if (enSuelo && Mathf.Abs(movimiento) > 0.1f)
         {
             pasoCooldown -= Time.deltaTime;
@@ -75,15 +75,16 @@ public class MovimientoJugador : MonoBehaviour
             pasoCooldown = 0f;
         }
 
-
+        // Animación de correr
         if (animator != null)
-            animator.SetBool("correr", movimiento != 0);
+            animator.SetBool("correr", movimiento != 0f);
     }
 
     void FixedUpdate()
     {
         rb.linearVelocity = new Vector2(movimiento * movimientoSpeed, rb.linearVelocity.y);
     }
+
 
     private void Girar(int direccion)
     {

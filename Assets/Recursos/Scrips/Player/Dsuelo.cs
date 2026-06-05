@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class Dsuelo : MonoBehaviour
+public class DSuelo : MonoBehaviour
 {
+    private int cantidadSuelos = 0; // Cuenta cuántos bloques de suelo tocamos
+    public bool tocandoSuelo => cantidadSuelos > 0; // Es verdadero si el contador es mayor a 0
 
-    public bool tocandoSuelo;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Suelo"))
         {
-            tocandoSuelo = true;
-
+            cantidadSuelos++;
         }
     }
 
@@ -17,9 +17,8 @@ public class Dsuelo : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Suelo"))
         {
-            tocandoSuelo = false;
+            cantidadSuelos--;
+            if (cantidadSuelos < 0) cantidadSuelos = 0; // Evita números negativos por si acaso
         }
     }
-
-
 }

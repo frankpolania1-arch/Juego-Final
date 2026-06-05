@@ -175,10 +175,12 @@ public class ServiciosJugador : MonoBehaviour
         corazones.gameObject.SetActive(false);
 
         variables.gameObject.SetActive(false);
-        mensajeMuerte.text = "GAME OVER";
-        mensajeMuerte.gameObject.SetActive(true);
+
+
+        mensajeMuerte.gameObject.SetActive(false);
         btnContinuar.SetActive(true);
         btnSalir.SetActive(true);
+    
         fondoMuerte.gameObject.SetActive(true);
         Time.timeScale = 0f;
     }
