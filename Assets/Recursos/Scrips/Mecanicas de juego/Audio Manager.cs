@@ -18,6 +18,13 @@ public class AudioManager : MonoBehaviour
     public AudioClip saltar;
     public AudioClip recibirDanio;
     public AudioClip gameOver;
+    public AudioClip checkpoint;
+    public AudioClip tocarCaja;
+    public AudioClip respuestaCorrecta;
+    public AudioClip respuestaIncorrecta;
+    public AudioClip recogerPunto;
+    public AudioClip puertaDesbloqueada;
+    public AudioClip sonidoVictoria;   // 🆕 Sonido al tocar el trofeo final
 
     void Awake()
     {
@@ -39,16 +46,13 @@ public class AudioManager : MonoBehaviour
             sfxSource.playOnAwake = false;
         }
 
-        // Reproducir música de nivel por defecto
-        CambiarMusica(musicaNivel);
+        // No pongo música por defecto aquí, la controlará cada escena.
     }
 
     /// <summary> Reproduce un efecto de sonido sin interrumpir la música. </summary>
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
-
-        // Ahora siempre tenemos un sfxSource válido
         sfxSource.PlayOneShot(clip);
     }
 

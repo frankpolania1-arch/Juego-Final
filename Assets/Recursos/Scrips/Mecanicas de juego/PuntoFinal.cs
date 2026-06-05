@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class PuntoFinal : MonoBehaviour
 {
-
-
     [Header("Pantalla Final")]
     public Canvas pantallaFinal;
 
@@ -16,7 +14,6 @@ public class PuntoFinal : MonoBehaviour
     void Start()
     {
         pantallaFinal.enabled = false;
-
         btnSalir.SetActive(false);
     }
 
@@ -24,8 +21,15 @@ public class PuntoFinal : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            pantallaFinal.enabled = true;
+            // Detenemos la música de fondo
+            if (AudioManager.instance != null)
+                AudioManager.instance.StopMusica();
 
+            // 🔊 Reproducimos el sonido de victoria
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.sonidoVictoria);
+
+            pantallaFinal.enabled = true;
             btnSalir.SetActive(true);
         }
     }
