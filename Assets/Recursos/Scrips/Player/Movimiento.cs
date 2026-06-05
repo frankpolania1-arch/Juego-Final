@@ -27,7 +27,7 @@ public class MovimientoJugador : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         servicios = GetComponent<ServiciosJugador>();
-        servicios.PuntoInicio();
+   
     }
 
     void Update()
@@ -36,16 +36,14 @@ public class MovimientoJugador : MonoBehaviour
 
         bool enSuelo = Dsuelo.tocandoSuelo;
 
-        // Salto (y sonido de salto)
         if (enSuelo && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
-            // Reproducir sonido de salto
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(AudioManager.instance.saltar);
         }
 
-        // Movimiento horizontal
+
         if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
         {
             movimiento = -1f;
@@ -61,7 +59,7 @@ public class MovimientoJugador : MonoBehaviour
             movimiento = 0f;
         }
 
-        // Sonido de caminar (con cooldown)
+
         if (enSuelo && Mathf.Abs(movimiento) > 0.1f)
         {
             pasoCooldown -= Time.deltaTime;
@@ -74,10 +72,10 @@ public class MovimientoJugador : MonoBehaviour
         }
         else
         {
-            pasoCooldown = 0f;  // Reinicia el cooldown al parar
+            pasoCooldown = 0f;
         }
 
-        // Actualizar animator
+
         if (animator != null)
             animator.SetBool("correr", movimiento != 0);
     }

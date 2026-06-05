@@ -10,6 +10,14 @@ TagManager:
   - Drana
   - Suelo
   - variables
+  - nivel2
+  - FinNivel1
+  - check
+  - check1
+  - Puerta2
+  - puerta2
+  - PuertaN2
+  - PuertaN3
   layers:
   - Default
   - TransparentFX
