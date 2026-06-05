@@ -1,16 +1,9 @@
-<<<<<<< HEAD
 using System;
-=======
-using System.Threading.Tasks;
->>>>>>> 79718277a544656d64e1422818c9eaa80f361c21
 using UnityEngine;
 
 public class SensorCheck : MonoBehaviour
 {
     public GameManager gameManager;
-    public Animator anim;
-
-
 
     [Header("player")]
     public ServiciosJugador player;
@@ -83,7 +76,6 @@ public class SensorCheck : MonoBehaviour
 
            
             gameManager.OnCheckTriggered(other);
-<<<<<<< HEAD
             animator.SetBool("check", true);
 
             if (gameObject.name == "nivel2")
@@ -101,17 +93,6 @@ public class SensorCheck : MonoBehaviour
                 gameManager.puertaBloque.gameObject.SetActive(true);
                 gameManager.puertaBloque.gameObject.transform.position = new Vector2(puertabloqueN32X, puertabloqueN32Y);
             }
-=======
-            anim.SetBool("check", true);
-        }
-    }
-    private async void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            await Task.Delay(500);
-            anim.SetBool("check", false);
->>>>>>> 79718277a544656d64e1422818c9eaa80f361c21
         }
     }
 }
