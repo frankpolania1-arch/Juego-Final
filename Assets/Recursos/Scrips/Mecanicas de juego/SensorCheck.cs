@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class SensorCheck : MonoBehaviour
@@ -47,7 +48,7 @@ public class SensorCheck : MonoBehaviour
         animator.SetBool("check", false);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private async void OnTriggerEnter2D(Collider2D other)
     {
         if (animator.GetBool("check"))
             return;
@@ -70,7 +71,17 @@ public class SensorCheck : MonoBehaviour
         if (gameObject.CompareTag("FinNivel1") && other.CompareTag("Player"))
         {
             animator.SetBool("check", true);
+            Time.timeScale = 0f;
+            player.fondoCarga.gameObject.SetActive(true);
+
+            await Task.Delay(3000);
+
             player.Tp(nivel2X, nivel2Y, "nivel2");
+
+            player.fondoCarga.gameObject.SetActive(false);
+            Time.timeScale = 1f;
+
+           
         }
 
         if (gameObject.CompareTag("check") && other.CompareTag("Player"))

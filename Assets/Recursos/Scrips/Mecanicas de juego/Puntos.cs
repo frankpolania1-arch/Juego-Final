@@ -5,32 +5,28 @@ public class Puntos : MonoBehaviour
     [Header("ServiciosJugador")]
     public ServiciosJugador serviciosJugador;
 
-    private int puntosParaVidaExtra = 0;
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            // 🔊 Sonido al recoger un punto
-            if (AudioManager.instance != null)
-                AudioManager.instance.PlaySFX(AudioManager.instance.recogerPunto);
+        if (!collision.CompareTag("Player"))
+            return;
 
-            serviciosJugador.puntos = serviciosJugador.puntos + 5;
-            puntosParaVidaExtra += 5;
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(AudioManager.instance.recogerPunto);
 
-            if (puntosParaVidaExtra >= 50)
-            {
-                serviciosJugador.TXTpuntos.text = serviciosJugador.puntos.ToString();
-                puntosParaVidaExtra = 0;
-                serviciosJugador.GenerarCorazon();
+        serviciosJugador.puntos += 5;
+        serviciosJugador.puntosParaVidaExtra += 5;
 
-                Debug.Log("Vida extra obtenida");
-                Destroy(gameObject);
-                return;
-            }
-
+        if (serviciosJugador.TXTpuntos != null)
             serviciosJugador.TXTpuntos.text = serviciosJugador.puntos.ToString();
-            Destroy(gameObject);
+
+        if (serviciosJugador.puntosParaVidaExtra >= 50)
+        {
+            serviciosJugador.puntosParaVidaExtra -= 50; // conserva sobrantes
+            serviciosJugador.GenerarCorazon();
+
+            Debug.Log("Vida extra obtenida");
         }
+
+        Destroy(gameObject);
     }
 }

@@ -1,3 +1,4 @@
+using DreamNoms.HeartSystem;
 using UnityEngine;
 
 public class PuntoFinal : MonoBehaviour
@@ -11,6 +12,9 @@ public class PuntoFinal : MonoBehaviour
     [Header("Collider")]
     public Collider2D box;
 
+    [Header("player")]
+    public ServiciosJugador player;
+
     void Start()
     {
         pantallaFinal.enabled = false;
@@ -21,6 +25,9 @@ public class PuntoFinal : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            player.corazones.gameObject.SetActive(false);
+            player.TXTpuntos.gameObject.SetActive(false);
+            player.variables.gameObject.SetActive(false);
             // Detenemos la música de fondo
             if (AudioManager.instance != null)
                 AudioManager.instance.StopMusica();

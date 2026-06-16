@@ -12,6 +12,10 @@ public class MovimientoJugador : MonoBehaviour
     [Header("Detectar Suelo")]
     public DSuelo Dsuelo;
 
+    private bool estabaEnSuelo;
+    private float alturaInicioCaida;
+    private bool ignorarCaida = false;
+
     // Sonidos
     private float pasoCooldown = 0f;
     public float pasoIntervalo = 0.4f;  // Tiempo entre pasos
@@ -20,30 +24,64 @@ public class MovimientoJugador : MonoBehaviour
     private Animator animator;
     private float movimiento;
     private ServiciosJugador servicios;
-    
+    private int saltosRestantes = 2;
+
+
+    public float alturaMortal = 8f;
+ 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         servicios = GetComponent<ServiciosJugador>();
-   
+
     }
 
     void Update()
     {
         bool enSuelo = Dsuelo.tocandoSuelo;
 
-        if (enSuelo) Debug.Log("En suelo");
+        // Comenzó a caer
+        if (estabaEnSuelo && !enSuelo && !ignorarCaida)
+        {
+            alturaInicioCaida = transform.position.y;
+        }
 
-        // Salto corregido
+        // Aterrizó
+        if (!estabaEnSuelo && enSuelo && !ignorarCaida)
+        {
+            float distanciaCaida = alturaInicioCaida - transform.position.y;
+
+            if (distanciaCaida >= alturaMortal)
+            {
+                ignorarCaida = true;
+                servicios.Muerte();
+                return;
+            }
+        }
+
+
+        estabaEnSuelo = enSuelo;
+
+        if (enSuelo)
+        {
+            animator.SetBool("salto", false);
+            animator.SetBool("caida", false);
+        }
+        else
+        {
+            animator.SetBool("salto", rb.linearVelocity.y > 0.1f);
+            animator.SetBool("caida", rb.linearVelocity.y < -0.1f);
+        }
         if (enSuelo && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
+
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(AudioManager.instance.saltar);
         }
 
-        // CONTROL DE MOVIMIENTO (CORREGIDO: Ahora sí se detiene)
+        // Movimiento
         if (Keyboard.current.aKey.isPressed)
         {
             movimiento = -1f;
@@ -56,16 +94,40 @@ public class MovimientoJugador : MonoBehaviour
         }
         else
         {
-            movimiento = 0f; // ¡ESTA LÍNEA CORRIGE EL BLOQUEO!
+            movimiento = 0f;
         }
 
-        // Lógica del sonido de pasos
+        // Animaciones
+        animator.SetBool("correr", enSuelo && movimiento != 0);
+
+        if (!enSuelo)
+        {
+            if (rb.linearVelocity.y > 0.1f)
+            {
+                animator.SetBool("salto", true);
+                animator.SetBool("caida", false);
+            }
+            else if (rb.linearVelocity.y < -0.1f)
+            {
+                animator.SetBool("salto", false);
+                animator.SetBool("caida", true);
+            }
+        }
+        else
+        {
+            animator.SetBool("salto", false);
+            animator.SetBool("caida", false);
+        }
+
+        // Sonido pasos
         if (enSuelo && Mathf.Abs(movimiento) > 0.1f)
         {
             pasoCooldown -= Time.deltaTime;
+
             if (pasoCooldown <= 0f)
             {
                 pasoCooldown = pasoIntervalo;
+
                 if (AudioManager.instance != null)
                     AudioManager.instance.PlaySFX(AudioManager.instance.caminar);
             }
@@ -74,18 +136,11 @@ public class MovimientoJugador : MonoBehaviour
         {
             pasoCooldown = 0f;
         }
-
-        // Animación de correr
-        if (animator != null)
-            animator.SetBool("correr", movimiento != 0f);
     }
-
     void FixedUpdate()
     {
         rb.linearVelocity = new Vector2(movimiento * movimientoSpeed, rb.linearVelocity.y);
     }
-
-
     private void Girar(int direccion)
     {
         Vector3 escala = transform.localScale;

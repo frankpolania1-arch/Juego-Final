@@ -65,6 +65,7 @@ public class Cajas : MonoBehaviour
         Bx = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
 
+
         if (cachedFondo == null)
         {
             GameObject fObj = GameObject.Find("CanvasFondo");
@@ -105,6 +106,7 @@ public class Cajas : MonoBehaviour
     public void RespuestaCorrecta()
     {
         anim.SetBool("cambio", true);
+        
 
         if (btnA != null) btnA.gameObject.SetActive(false);
         if (btnB != null) btnB.gameObject.SetActive(false);

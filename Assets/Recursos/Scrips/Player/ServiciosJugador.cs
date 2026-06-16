@@ -7,9 +7,11 @@ using UnityEngine.SceneManagement;
 
 public class ServiciosJugador : MonoBehaviour
 {
+    public int puntos;
+    public int puntosParaVidaExtra;
     float inicioX;
     float inicioY;
-    public int puntos = 0;
+
     public int vidas = 3;
 
     private bool recibiendoDaño = false;
@@ -29,6 +31,9 @@ public class ServiciosJugador : MonoBehaviour
 
     [Header("Fondo")]
     public Canvas fondo;
+
+    [Header("Fondo Carga")]
+    public Canvas fondoCarga;
 
     [Header("Fondo Muerte")]
     public Canvas fondoMuerte;
@@ -50,11 +55,15 @@ public class ServiciosJugador : MonoBehaviour
     [Header("CorazonesEfectos")] 
     public HeartEffectSO efectosCorazon;
 
+    [Header("Rigidbody")]
+    public Rigidbody2D rb;
+
 
     void Awake()
     {
         vidas = 3;
         fondoMuerte.gameObject.SetActive(false);
+        fondoCarga.gameObject.SetActive(false);
 
         if (animator == null)
             animator = GetComponent<Animator>();
@@ -79,7 +88,7 @@ public class ServiciosJugador : MonoBehaviour
     public async Task PerderVida()
     {
         heartEffects.BeginEffect(efectosCorazon,BeginEffectMode.Single);
-        await Task.Delay(700);
+        await Task.Delay(400);
         heartEffects.StopEffect(efectosCorazon);
     }
 
@@ -107,61 +116,57 @@ public class ServiciosJugador : MonoBehaviour
 
     public async void Muerte()
     {
-        if (recibiendoDaño) return;
+        if (recibiendoDaño)
+            return;
 
         recibiendoDaño = true;
         vidas--;
+
         variables.gameObject.SetActive(false);
+
         if (AudioManager.instance != null)
             AudioManager.instance.PlaySFX(AudioManager.instance.recibirDanio);
 
         await PerderVida();
-        if (vidas == 0)
+
+        // Game Over
+        if (vidas <= 0)
         {
             recibiendoDaño = false;
             GameOver();
             return;
         }
 
-
+        // Actualizar UI
         if (vidas >= 3)
         {
             variables.gameObject.SetActive(true);
-         
             variables.text = "Vidas: " + vidas;
-
-            animator.SetBool("Muerte", true);
-
-            await Task.Delay(500);
-
-            animator.SetBool("Muerte", false);
-
-            transform.position = new Vector2(inicioX, inicioY);
-
-            await Task.Delay(500);
-            
-            recibiendoDaño = false;
-            
-            return;
         }
-           
-
+        else
+        {
             corazones.GetComponent<HealthController>().TakeDamage(1);
-
             variables.text = "Vidas: " + vidas;
+        }
 
-            animator.SetBool("Muerte", true);
+        // Animación de muerte
+        animator.SetBool("Muerte", true);
 
-            await Task.Delay(500);
+        await Task.Delay(500);
 
-            animator.SetBool("Muerte", false);
+        animator.SetBool("Muerte", false);
 
-            transform.position = new Vector2(inicioX, inicioY);
+        // Respawn
+        transform.position = new Vector2(inicioX, inicioY);
 
-             await Task.Delay(500);
+        // Detener cualquier velocidad residual
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
+
+        await Task.Delay(500);
+
         recibiendoDaño = false;
-    } 
-
+    }
     void GameOver()
     {
         //  SONIDO DE GAME OVER
